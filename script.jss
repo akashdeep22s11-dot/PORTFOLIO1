@@ -1,0 +1,61 @@
+// Mobile nav + overlay
+const openNav = document.getElementById('openNav');
+const closeNav = document.getElementById('closeNav');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+function showSidebar() {
+  sidebar.style.transform = 'translateX(0)';
+  overlay.classList.add('show');
+  overlay.style.display = 'block';
+}
+function hideSidebar() {
+  sidebar.style.transform = '';
+  overlay.classList.remove('show');
+  overlay.style.display = 'none';
+}
+
+if (openNav) openNav.addEventListener('click', showSidebar);
+if (closeNav) closeNav.addEventListener('click', hideSidebar);
+overlay.addEventListener('click', hideSidebar);
+
+// Theme toggle (light / dark-ish accent)
+const themeToggle = document.getElementById('themeToggle');
+themeToggle?.addEventListener('click', () => {
+  document.documentElement.classList.toggle('darkmode');
+  // Persist preference
+  if (document.documentElement.classList.contains('darkmode')) {
+    localStorage.setItem('theme','dark');
+    themeToggle.textContent = '☀️';
+    // apply quick dark overrides
+    document.documentElement.style.setProperty('--bg','#07121a');
+    document.documentElement.style.setProperty('--card','#071827');
+    document.documentElement.style.setProperty('--navy','#e6f7f2');
+    document.documentElement.style.setProperty('--muted','#9fb8b3');
+  } else {
+    localStorage.removeItem('theme');
+    themeToggle.textContent = '🌗';
+    // reset inline styles (you can reload to fully apply CSS variables)
+    document.documentElement.style.removeProperty('--bg');
+    document.documentElement.style.removeProperty('--card');
+    document.documentElement.style.removeProperty('--navy');
+    document.documentElement.style.removeProperty('--muted');
+  }
+});
+
+// preserve theme on load
+if (localStorage.getItem('theme') === 'dark') {
+  themeToggle?.click();
+}
+
+/* Optional: simple reveal on scroll for section cards */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('reveal');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.card, .gallery-item, .hero').forEach(el => revealObserver.observe(el));
